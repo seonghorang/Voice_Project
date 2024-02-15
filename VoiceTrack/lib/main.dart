@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voicetrack/screens/test/test.dart';
 import 'package:voicetrack/screens/filerange/filerange.dart';
+import 'package:voicetrack/screens/record/record.dart';
 import 'package:voicetrack/widgets/navigationbar.dart';
 
 void main() {
@@ -49,9 +50,7 @@ class MyApp extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => Test(),
-                    ),
+                    MaterialPageRoute(builder: (context) => Record()),
                   );
                 },
               );

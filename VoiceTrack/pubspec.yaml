@@ -44,6 +44,15 @@ dependencies:
   #파일 업로드
   file_picker: ^6.1.1
 
+  #녹음
+  flutter_sound: ^8.1.4
+
+  #path_provider
+  path_provider: ^2.1.2
+
+  #권한 요청
+  permission_handler: "^11.3.0"
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
