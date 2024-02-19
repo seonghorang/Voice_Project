@@ -22,7 +22,7 @@ class FileRangeState extends State<FileRange> {
     });
 
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://127.0.0.1:5000/upload'));
+        'POST', Uri.parse('http://172.30.1.17:5000/upload'));
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     var response = await request.send();
     if (response.statusCode == 200) {
