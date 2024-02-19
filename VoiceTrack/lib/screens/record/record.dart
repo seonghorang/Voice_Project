@@ -16,10 +16,23 @@ class Record extends StatefulWidget {
 
 class _RecordState extends State<Record> {
   FlutterSoundRecorder? _recorder = FlutterSoundRecorder();
+  FlutterSoundPlayer? _player = FlutterSoundPlayer();
   bool _isRecording = false;
   String? _recordFilePath;
   String? _key;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _recorder = FlutterSoundRecorder();
+    _player = FlutterSoundPlayer();
+    initPlayer();
+  }
+
+  void initPlayer() async {
+    await _player!.openAudioSession();
+  }
 
   void _startRecording() async {
     PermissionStatus status = await Permission.microphone.request();
@@ -27,14 +40,15 @@ class _RecordState extends State<Record> {
       await _recorder!.openAudioSession();
       Directory appDocDirectory = await getApplicationDocumentsDirectory();
       String appDocPath = appDocDirectory.path;
-      _recordFilePath = '$appDocPath/record.aac';
+      _recordFilePath = '$appDocPath/record.wav';
       await _recorder!.startRecorder(
         toFile: _recordFilePath,
-        codec: Codec.aacADTS,
+        codec: Codec.pcm16WAV,
       );
       setState(() {
         _isRecording = true;
       });
+      print('녹음 시작');
     } else {
       print('Microphone permission not granted');
       //여기에 필요한 알림 또는 동작을 추가합니다.
@@ -44,7 +58,16 @@ class _RecordState extends State<Record> {
   void _stopRecording() async {
     await _recorder!.stopRecorder();
     await _recorder!.closeAudioSession();
-    _recorder = null;
+    _recorder = FlutterSoundRecorder();
+
+    if (_recordFilePath != null) {
+      File file = File(_recordFilePath!);
+      if (await file.exists()) {
+        print('File exists, size: ${await file.length()} bytes');
+      } else {
+        print('File does not exist');
+      }
+    }
 
     setState(() {
       _isRecording = false;
@@ -53,14 +76,15 @@ class _RecordState extends State<Record> {
     if (_recordFilePath != null) {
       uploadFile(File(_recordFilePath!));
     }
+    print('녹음 종료');
   }
 
   void uploadFile(File file) async {
     setState(() {
       _isLoading = true;
     });
-    var request =
-        http.MultipartRequest('POST', Uri.parse('http://10.0.2.2:5000/upload'));
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://127.0.0.1:5000/upload'));
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     var response = await request.send();
     if (response.statusCode == 200) {
@@ -78,6 +102,15 @@ class _RecordState extends State<Record> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  void _playRecording() async {
+    if (_recordFilePath != null) {
+      await _player!.startPlayer(fromURI: _recordFilePath);
+    } else {
+      print('No recording to play');
+    }
+    print('녹음 재생');
   }
 
   @override
@@ -100,6 +133,13 @@ class _RecordState extends State<Record> {
                       child: ElevatedButton(
                         child: const Text('녹음 종료'),
                         onPressed: _isRecording ? _stopRecording : null,
+                      ),
+                    ),
+                    Visibility(
+                      visible: !_isRecording && _recordFilePath != null,
+                      child: ElevatedButton(
+                        child: const Text('녹음 재생'),
+                        onPressed: _playRecording,
                       ),
                     ),
                     if (_key != null) Text('당신의 키 : $_key'),
