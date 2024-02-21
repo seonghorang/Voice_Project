@@ -1,6 +1,8 @@
 from flask import Flask, request
 import librosa
 import numpy as np
+import os
+import uuid
 
 app = Flask(__name__)
 
@@ -20,12 +22,27 @@ def calculate_key(file_path):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    file = request.files['file']
-    # 임시 파일로 저장
-    file.save('temp.wav')
-    # 이 파일을 처리하고 결과를 반환합니다.
-    key = calculate_key('temp.wav')
-    return {'key': key}
+    files = request.files.getlist('file')
+    keys = {}
+    for file in files:
+        # 고유 이름 생성
+        filename = 'temp_{}.wav'.format(uuid.uuid4())
+        # 임시 파일로 저장
+        file.save(filename)
+        try:
+            wav_filename = filename.replace('.mp3', '.wav')
+            key = calculate_key(wav_filename)
+            keys[file.filename] = key
+        except Exception as e:
+            return {'error': str(e)}
+        finally:
+            # 임시 파일 삭제
+            if os.path.exists(wav_filename):
+                try:
+                    os.remove(wav_filename)
+                except OSError as e:
+                    return {'error': 'Failed to delete file {}'.format(wav_filename)}
+    return keys
 
 if __name__ == '__main__':
     app.run(debug=True)
