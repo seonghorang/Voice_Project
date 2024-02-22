@@ -44,5 +44,14 @@ def upload_file():
                     return {'error': 'Failed to delete file {}'.format(wav_filename)}
     return keys
 
+@app.route('/record', methods=['POST'])
+def record_file():
+    file = request.files['file']
+    # 임시 파일로 저장
+    file.save('temp.wav')
+    # 이 파일을 처리하고 결과를 반환합니다.
+    key = calculate_key('temp.wav')
+    return {'key': key}
+
 if __name__ == '__main__':
     app.run(debug=True)

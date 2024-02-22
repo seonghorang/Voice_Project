@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:voicetrack/screens/record/combi.dart';
 import 'package:voicetrack/widgets/navigationbar.dart';
 import 'package:voicetrack/widgets/filerange.dart';
 import 'package:voicetrack/widgets/record.dart';
@@ -35,7 +34,7 @@ class MyApp extends StatelessWidget {
         body: Column(
           children: [
             SizedBox(
-              height: 300,
+              height: 330,
               child: FileRangeWidget(),
             ),
             SizedBox(

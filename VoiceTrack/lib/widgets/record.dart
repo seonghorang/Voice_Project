@@ -22,6 +22,7 @@ class RecordWidgetState extends State<RecordWidget> {
   String? _recordFilePath;
   String? _key;
   bool _isLoading = false;
+  List<String> keys = [];
 
   @override
   void initState() {
@@ -84,8 +85,11 @@ class RecordWidgetState extends State<RecordWidget> {
     setState(() {
       _isLoading = true;
     });
+
+    audioPlayer.play(AssetSource('sounds/ailoading.mp3'));
+
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://172.30.1.17:5000/upload'));
+        'POST', Uri.parse('http://172.30.1.17:5000/record'));
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     var response = await request.send();
     if (response.statusCode == 200) {
@@ -103,6 +107,7 @@ class RecordWidgetState extends State<RecordWidget> {
     setState(() {
       _isLoading = false;
     });
+    audioPlayer.stop();
   }
 
   void _playRecording() async {
@@ -118,7 +123,27 @@ class RecordWidgetState extends State<RecordWidget> {
   Widget build(BuildContext context) {
     return Center(
       child: _isLoading
-          ? CircularProgressIndicator()
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  'assets/image/cat2.png',
+                  width: 280,
+                  height: 320,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    "AI가 돌아가고 이쓰요!",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold, // 볼드체
+                      fontSize: 18, // 글자 크기
+                    ),
+                  ),
+                ),
+              ],
+            )
           : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
