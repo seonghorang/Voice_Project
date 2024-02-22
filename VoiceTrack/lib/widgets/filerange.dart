@@ -71,12 +71,23 @@ class FileRangeWidgetState extends State<FileRangeWidget> {
     return Center(
       child: _isLoading
           ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                CircularProgressIndicator(),
+                Image.asset(
+                  'assets/image/cat2.png',
+                  width: 280,
+                  height: 300,
+                ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text("AI가 돌아가고 이쓰요!"),
+                  padding: const EdgeInsets.only(top: 0),
+                  child: Text(
+                    "AI가 돌아가고 이쓰요!",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold, // 볼드체
+                      fontSize: 18, // 글자 크기
+                    ),
+                  ),
                 ),
               ],
             )
